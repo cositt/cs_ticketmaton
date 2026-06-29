@@ -2,6 +2,14 @@
 
 Módulo de dispensador de turnos con kiosco táctil, pantalla pública, panel de empleado e impresión térmica.
 
+## Documentación completa
+
+- **Online:** [https://cositt.github.io/cs_ticketmaton_documentacion/](https://cositt.github.io/cs_ticketmaton_documentacion/)
+- **Repositorio:** [github.com/cositt/cs_ticketmaton_documentacion](https://github.com/cositt/cs_ticketmaton_documentacion)
+- **En el módulo:** [docs/guia-uso/](docs/guia-uso/README.md)
+
+14 capítulos: instalación, colas, mesas, kiosco, pantalla TV, panel empleado, impresión, API y troubleshooting.
+
 ## Qué hace
 
 Gestiona turnos físicos en tienda o mostrador:
