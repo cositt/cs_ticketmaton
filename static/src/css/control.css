@@ -1,0 +1,137 @@
+.ticketmaton-control {
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #1a2332;
+    padding: 1.5rem;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.tc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tc-station-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.tc-status {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #27ae60;
+    min-height: 1.4rem;
+}
+
+.tc-status-error {
+    color: #e63946;
+}
+
+.tc-queues {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.tc-queue-card {
+    background: #fff;
+    border-radius: 14px;
+    border-top: 6px solid #3498db;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.tc-queue-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.tc-queue-head h2 {
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.tc-waiting {
+    background: #eef2f5;
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #5a6b7b;
+}
+
+.tc-current {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.tc-current-label {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8a97a5;
+}
+
+.tc-current-number {
+    display: block;
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1a5276;
+}
+
+.tc-next {
+    text-align: center;
+    color: #5a6b7b;
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tc-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+}
+
+.tc-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s, filter 0.12s;
+}
+
+.tc-btn:active {
+    transform: scale(0.97);
+}
+
+.tc-btn-next {
+    background: #1a5276;
+    color: #fff;
+    font-size: 1.4rem;
+    padding: 1.25rem;
+}
+
+.tc-btn-recall {
+    background: #f39c12;
+    color: #fff;
+}
+
+.tc-btn-skip {
+    background: #eef2f5;
+    color: #5a6b7b;
+}
+
+.tc-btn:hover {
+    filter: brightness(1.05);
+}

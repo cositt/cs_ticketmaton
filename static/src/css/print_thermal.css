@@ -1,0 +1,66 @@
+@media screen {
+    .ticketmaton-print-area {
+        position: fixed;
+        left: -9999px;
+        top: 0;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    .ticketmaton-print-area,
+    .ticketmaton-print-area * {
+        visibility: visible !important;
+    }
+
+    .ticketmaton-print-area {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 58mm;
+    }
+
+    .ticketmaton-print-ticket {
+        width: 58mm;
+        font-family: monospace, sans-serif;
+        font-size: 12pt;
+        text-align: center;
+        padding: 2mm;
+    }
+
+    .print-header {
+        font-weight: bold;
+        font-size: 14pt;
+        margin-bottom: 2mm;
+    }
+
+    .print-station {
+        font-size: 10pt;
+        margin-bottom: 2mm;
+    }
+
+    .print-queue {
+        font-size: 11pt;
+        margin: 3mm 0;
+    }
+
+    .print-number {
+        font-size: 36pt;
+        font-weight: bold;
+        margin: 5mm 0;
+        line-height: 1;
+    }
+
+    .print-date {
+        font-size: 9pt;
+        margin: 3mm 0;
+    }
+
+    .print-footer {
+        font-size: 9pt;
+        margin-top: 4mm;
+    }
+}

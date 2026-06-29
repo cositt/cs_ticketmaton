@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ticketmaton_root"
+              name="Ticketmaton"
+              web_icon="cs_ticketmaton,static/description/icon.png"
+              sequence="85"/>
+
+    <menuitem id="menu_ticketmaton_panel"
+              name="Panel"
+              parent="menu_ticketmaton_root"
+              action="action_ticketmaton_ticket"
+              sequence="10"/>
+
+    <menuitem id="menu_ticketmaton_stations"
+              name="Estaciones"
+              parent="menu_ticketmaton_root"
+              action="action_ticketmaton_station"
+              sequence="20"
+              groups="cs_ticketmaton.group_ticketmaton_manager"/>
+
+    <menuitem id="menu_ticketmaton_queues"
+              name="Colas"
+              parent="menu_ticketmaton_root"
+              action="action_ticketmaton_queue"
+              sequence="30"
+              groups="cs_ticketmaton.group_ticketmaton_manager"/>
+</odoo>

@@ -1,0 +1,111 @@
+.ticketmaton-display {
+    --td-bg: #0d1b2a;
+    --td-text: #ffffff;
+    --td-accent: #e63946;
+    --td-font-size: 120px;
+    min-height: 100vh;
+    background: var(--td-bg);
+    color: var(--td-text);
+    padding: 2rem;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.td-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.td-station-name {
+    font-size: 2rem;
+    font-weight: 300;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.td-queues {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.td-queue-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border-left: 6px solid;
+    padding: 2rem;
+    text-align: center;
+}
+
+.td-queue-name {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.td-now-label,
+.td-next-label {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    margin-bottom: 0.5rem;
+}
+
+.td-current-number {
+    font-size: var(--td-font-size);
+    font-weight: 800;
+    color: var(--td-accent);
+    line-height: 1;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.td-next-numbers {
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+.td-call-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: td-fade-in 0.3s ease;
+}
+
+.td-call-content {
+    text-align: center;
+}
+
+.td-call-prefix {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.td-call-number {
+    font-size: calc(var(--td-font-size) * 1.2);
+    font-weight: 900;
+    color: var(--td-accent);
+    animation: td-pulse 1s ease infinite;
+}
+
+.td-call-queue {
+    font-size: 2rem;
+    margin-top: 1rem;
+    opacity: 0.7;
+}
+
+@keyframes td-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes td-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

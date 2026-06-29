@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ticketmaton_station_user,ticketmaton.station.user,model_ticketmaton_station,group_ticketmaton_user,1,0,0,0
+access_ticketmaton_station_manager,ticketmaton.station.manager,model_ticketmaton_station,group_ticketmaton_manager,1,1,1,1
+access_ticketmaton_queue_user,ticketmaton.queue.user,model_ticketmaton_queue,group_ticketmaton_user,1,0,0,0
+access_ticketmaton_queue_manager,ticketmaton.queue.manager,model_ticketmaton_queue,group_ticketmaton_manager,1,1,1,1
+access_ticketmaton_ticket_user,ticketmaton.ticket.user,model_ticketmaton_ticket,group_ticketmaton_user,1,1,0,0
+access_ticketmaton_ticket_manager,ticketmaton.ticket.manager,model_ticketmaton_ticket,group_ticketmaton_manager,1,1,1,1

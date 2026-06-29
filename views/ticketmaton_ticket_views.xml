@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ticketmaton_ticket_list" model="ir.ui.view">
+        <field name="name">ticketmaton.ticket.list</field>
+        <field name="model">ticketmaton.ticket</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('done','skipped','cancelled')"
+                  decoration-success="state == 'calling'"
+                  decoration-warning="state == 'waiting'"
+                  decoration-info="state == 'serving'">
+                <field name="create_date"/>
+                <field name="number_display"/>
+                <field name="queue_id"/>
+                <field name="station_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'calling'"
+                       decoration-warning="state == 'waiting'"
+                       decoration-info="state == 'serving'"
+                       decoration-muted="state in ('done','skipped','cancelled')"/>
+                <field name="call_date" optional="show"/>
+                <button name="action_call" type="object" string="Llamar" icon="fa-bullhorn"
+                        invisible="state != 'waiting'"/>
+                <button name="action_mark_done" type="object" string="Finalizar" icon="fa-check"
+                        invisible="state not in ('calling','serving')"/>
+                <button name="action_skip" type="object" string="Saltar" icon="fa-forward"
+                        invisible="state not in ('waiting','calling','serving')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ticketmaton_ticket_form" model="ir.ui.view">
+        <field name="name">ticketmaton.ticket.form</field>
+        <field name="model">ticketmaton.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Ticket">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="waiting,calling,serving,done"/>
+                    <button name="action_call" type="object" string="Llamar" class="btn-primary"
+                            invisible="state != 'waiting'"/>
+                    <button name="action_serve" type="object" string="Atender"
+                            invisible="state != 'calling'"/>
+                    <button name="action_mark_done" type="object" string="Finalizar"
+                            invisible="state not in ('calling','serving')"/>
+                    <button name="action_recall" type="object" string="Rellamar"
+                            invisible="state not in ('calling','serving')"/>
+                    <button name="action_skip" type="object" string="Saltar"
+                            invisible="state not in ('waiting','calling','serving')"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="number_display" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <field name="station_id"/>
+                        <field name="queue_id"/>
+                        <field name="create_date"/>
+                        <field name="call_date"/>
+                        <field name="serve_date"/>
+                        <field name="done_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ticketmaton_ticket_search" model="ir.ui.view">
+        <field name="name">ticketmaton.ticket.search</field>
+        <field name="model">ticketmaton.ticket</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="number_display"/>
+                <field name="queue_id"/>
+                <field name="station_id"/>
+                <filter name="waiting" string="En espera" domain="[('state','=','waiting')]"/>
+                <filter name="active" string="Activos" domain="[('state','in',['calling','serving'])]"/>
+                <filter name="today" string="Hoy" domain="[('create_date','&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter name="group_queue" string="Cola" context="{'group_by': 'queue_id'}"/>
+                    <filter name="group_station" string="Estacion" context="{'group_by': 'station_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ticketmaton_ticket" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">ticketmaton.ticket</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_waiting': 1}</field>
+    </record>
+
+    <!-- Panel empleado: vista kanban rapida -->
+    <record id="view_ticketmaton_ticket_kanban" model="ir.ui.view">
+        <field name="name">ticketmaton.ticket.kanban</field>
+        <field name="model">ticketmaton.ticket</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="number_display"/>
+                <field name="queue_name"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="fw-bold fs-2 text-center"><field name="number_display"/></div>
+                        <div class="text-muted text-center"><field name="queue_name"/></div>
+                        <footer class="mt-2">
+                            <button name="action_call" type="object" class="btn btn-sm btn-primary"
+                                    invisible="state != 'waiting'">Llamar</button>
+                            <button name="action_mark_done" type="object" class="btn btn-sm btn-success"
+                                    invisible="state not in ('calling','serving')">OK</button>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

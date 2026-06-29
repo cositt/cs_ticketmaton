@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_ticketmaton_ticket" model="ir.actions.report">
+        <field name="name">Ticket turno</field>
+        <field name="model">ticketmaton.ticket</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cs_ticketmaton.report_ticketmaton_ticket</field>
+        <field name="report_file">cs_ticketmaton.report_ticketmaton_ticket</field>
+        <field name="print_report_name">'Turno-%s' % object.number_display</field>
+        <field name="binding_model_id" ref="model_ticketmaton_ticket"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_ticketmaton_ticket">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="ticket">
+                <div class="page" style="width:58mm;font-family:monospace;text-align:center;padding:5mm;">
+                    <h3 t-esc="ticket.station_id.ticket_print_header"/>
+                    <p t-esc="ticket.station_id.name"/>
+                    <hr/>
+                    <p t-esc="ticket.queue_id.name"/>
+                    <h1 style="font-size:48pt;margin:10mm 0;" t-esc="ticket.number_display"/>
+                    <p t-esc="ticket.create_date" t-options="{'widget': 'datetime'}"/>
+                    <p t-esc="ticket.station_id.ticket_footer"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

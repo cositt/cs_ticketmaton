@@ -1,0 +1,113 @@
+.ticketmaton-kiosk {
+    --tk-bg: #1a5276;
+    --tk-btn-radius: 12px;
+    --tk-btn-size: 24px;
+    min-height: 100vh;
+    background: var(--tk-bg);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ticketmaton-kiosk.tk-dark {
+    background: #111;
+}
+
+.tk-screen {
+    width: 100%;
+    max-width: 900px;
+    text-align: center;
+}
+
+.tk-logo {
+    max-height: 120px;
+    max-width: 280px;
+    margin-bottom: 1.5rem;
+}
+
+.tk-welcome {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.tk-subtitle {
+    font-size: 1.4rem;
+    opacity: 0.85;
+    margin-bottom: 2.5rem;
+}
+
+.tk-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.tk-queue-btn {
+    border: none;
+    border-radius: var(--tk-btn-radius);
+    padding: 2rem 1.5rem;
+    font-size: var(--tk-btn-size);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 140px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.tk-queue-btn:active {
+    transform: scale(0.97);
+}
+
+.tk-queue-btn i {
+    font-size: 2.5rem;
+}
+
+.tk-ticket-card {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.tk-ticket-number {
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 1rem 0;
+    letter-spacing: 0.05em;
+}
+
+.tk-ticket-queue {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+.tk-btn-back {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    padding: 1rem 3rem !important;
+    font-size: 1.2rem !important;
+    border-radius: var(--tk-btn-radius) !important;
+}
+
+.tk-loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}

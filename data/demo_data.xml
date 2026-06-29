@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="demo_station_bebemalaga" model="ticketmaton.station">
+        <field name="name">Bebe Malaga - Tienda</field>
+        <field name="welcome_message">Bienvenido a Bebe Malaga</field>
+        <field name="subtitle_message">Pulse para sacar turno</field>
+        <field name="ticket_header">Su turno es</field>
+        <field name="ticket_footer">Espere a que se llame su numero en pantalla</field>
+        <field name="display_call_prefix">Pase a mostrador</field>
+        <field name="bg_color">#1a5276</field>
+        <field name="print_mode">browser</field>
+    </record>
+
+    <record id="demo_queue_atencion" model="ticketmaton.queue">
+        <field name="name">Atencion al cliente</field>
+        <field name="code">ATN</field>
+        <field name="station_id" ref="demo_station_bebemalaga"/>
+        <field name="sequence">10</field>
+        <field name="sequence_type">prefixed</field>
+        <field name="prefix">A</field>
+        <field name="padding">3</field>
+        <field name="min_value">0</field>
+        <field name="max_value">999</field>
+        <field name="button_label">Atencion</field>
+        <field name="button_color">#2980b9</field>
+        <field name="button_icon">fa-user</field>
+        <field name="color">#2980b9</field>
+    </record>
+
+    <record id="demo_queue_recogida" model="ticketmaton.queue">
+        <field name="name">Recogida pedidos</field>
+        <field name="code">REC</field>
+        <field name="station_id" ref="demo_station_bebemalaga"/>
+        <field name="sequence">20</field>
+        <field name="sequence_type">numeric</field>
+        <field name="padding">3</field>
+        <field name="min_value">0</field>
+        <field name="max_value">999</field>
+        <field name="button_label">Recogida</field>
+        <field name="button_color">#27ae60</field>
+        <field name="button_icon">fa-shopping-bag</field>
+        <field name="color">#27ae60</field>
+    </record>
+</odoo>

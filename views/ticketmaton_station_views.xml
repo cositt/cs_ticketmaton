@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ticketmaton_station_form" model="ir.ui.view">
+        <field name="name">ticketmaton.station.form</field>
+        <field name="model">ticketmaton.station</field>
+        <field name="arch" type="xml">
+            <form string="Estacion Ticketmaton">
+                <header>
+                    <button name="action_open_kiosk" type="object" string="Abrir Kiosco" class="btn-primary"/>
+                    <button name="action_open_display" type="object" string="Abrir Pantalla" class="btn-secondary"/>
+                    <button name="action_open_control" type="object" string="Abrir Panel Empleado" class="btn-secondary"/>
+                    <button name="action_reset_all_queues" type="object" string="Reset contadores" class="btn-warning"
+                            groups="cs_ticketmaton.group_ticketmaton_manager"
+                            confirm="¿Resetear todos los contadores de esta estacion?"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_open_kiosk" icon="fa-desktop">
+                            <field name="today_ticket_count" widget="statinfo" string="Hoy"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-clock-o">
+                            <field name="waiting_count" widget="statinfo" string="En espera"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-bullhorn">
+                            <field name="calling_count" widget="statinfo" string="Activos"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nombre estacion"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                            <field name="kiosk_url" widget="url"/>
+                            <field name="display_url" widget="url"/>
+                            <field name="control_url" widget="url"/>
+                            <field name="reset_hour" widget="float_time"/>
+                        </group>
+                        <group string="Impresion">
+                            <field name="print_mode"/>
+                            <field name="print_agent_url" invisible="print_mode != 'local_agent'"/>
+                            <field name="qz_printer_name" invisible="print_mode != 'qz_tray'"/>
+                            <field name="ticket_print_width"/>
+                            <field name="ticket_print_header"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Colas" name="queues">
+                            <field name="queue_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="sequence_type"/>
+                                    <field name="prefix" optional="show"/>
+                                    <field name="padding"/>
+                                    <field name="min_value"/>
+                                    <field name="max_value"/>
+                                    <field name="reset_policy"/>
+                                    <field name="counter_value" readonly="1"/>
+                                    <field name="waiting_count"/>
+                                    <field name="button_label" optional="hide"/>
+                                    <field name="button_color" widget="color" optional="hide"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mensajes kiosco" name="messages">
+                            <group>
+                                <field name="welcome_message"/>
+                                <field name="subtitle_message"/>
+                                <field name="ticket_header"/>
+                                <field name="ticket_footer"/>
+                            </group>
+                        </page>
+                        <page string="Estilo kiosco" name="kiosk_style">
+                            <group>
+                                <field name="theme"/>
+                                <field name="bg_color" widget="color"/>
+                                <field name="button_radius"/>
+                                <field name="button_text_size"/>
+                                <field name="logo" widget="image"/>
+                            </group>
+                        </page>
+                        <page string="Pantalla publica" name="display_style">
+                            <group>
+                                <field name="display_now_label"/>
+                                <field name="display_next_label"/>
+                                <field name="display_call_prefix"/>
+                                <field name="display_bg_color" widget="color"/>
+                                <field name="display_text_color" widget="color"/>
+                                <field name="display_accent_color" widget="color"/>
+                                <field name="display_font_size"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ticketmaton_station_list" model="ir.ui.view">
+        <field name="name">ticketmaton.station.list</field>
+        <field name="model">ticketmaton.station</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="waiting_count"/>
+                <field name="calling_count"/>
+                <field name="today_ticket_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ticketmaton_station" model="ir.actions.act_window">
+        <field name="name">Estaciones</field>
+        <field name="res_model">ticketmaton.station</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

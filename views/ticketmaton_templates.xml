@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="kiosk_page" name="Ticketmaton Kiosco">
+        <t t-call="web.frontend_layout">
+            <t t-set="head">
+                <t t-call-assets="cs_ticketmaton.assets_kiosk" t-js="false"/>
+                <script type="text/javascript" src="/cs_ticketmaton/static/src/js/escpos.js"/>
+                <script type="text/javascript" src="/cs_ticketmaton/static/src/js/printer.js"/>
+                <script type="text/javascript" src="/cs_ticketmaton/static/src/js/kiosk_app.js"/>
+            </t>
+            <t t-set="title" t-value="station.name"/>
+            <t t-set="no_header" t-value="1"/>
+            <t t-set="no_footer" t-value="1"/>
+            <t t-set="no_livechat" t-value="1"/>
+            <div id="ticketmaton-kiosk-root" class="ticketmaton-kiosk"
+                 t-att-data-station-id="station.id"
+                 t-att-data-token="token">
+            </div>
+        </t>
+    </template>
+
+    <template id="display_page" name="Ticketmaton Pantalla">
+        <t t-call="web.frontend_layout">
+            <t t-set="head">
+                <t t-call-assets="cs_ticketmaton.assets_display" t-js="false"/>
+                <script type="text/javascript" src="/cs_ticketmaton/static/src/js/display_app.js"/>
+            </t>
+            <t t-set="title" t-value="station.name + ' - Pantalla'"/>
+            <t t-set="no_header" t-value="1"/>
+            <t t-set="no_footer" t-value="1"/>
+            <t t-set="no_livechat" t-value="1"/>
+            <div id="ticketmaton-display-root" class="ticketmaton-display"
+                 t-att-data-station-id="station.id"
+                 t-att-data-token="token">
+            </div>
+        </t>
+    </template>
+
+    <template id="control_page" name="Ticketmaton Panel Empleado">
+        <t t-call="web.frontend_layout">
+            <t t-set="head">
+                <t t-call-assets="cs_ticketmaton.assets_control" t-js="false"/>
+                <script type="text/javascript" src="/cs_ticketmaton/static/src/js/control_app.js"/>
+            </t>
+            <t t-set="title" t-value="station.name + ' - Control'"/>
+            <t t-set="no_header" t-value="1"/>
+            <t t-set="no_footer" t-value="1"/>
+            <t t-set="no_livechat" t-value="1"/>
+            <div id="ticketmaton-control-root" class="ticketmaton-control"
+                 t-att-data-station-id="station.id"
+                 t-att-data-token="token">
+            </div>
+        </t>
+    </template>
+
+    <!-- Ticket imprimible (fallback navegador) -->
+    <template id="ticket_print_template" name="Ticket impresion">
+        <div class="ticketmaton-print-ticket">
+            <div class="print-header" t-esc="header"/>
+            <div class="print-station" t-esc="station_name"/>
+            <div class="print-queue" t-esc="queue_name"/>
+            <div class="print-number" t-esc="number"/>
+            <div class="print-date" t-esc="date"/>
+            <div class="print-footer" t-esc="footer"/>
+        </div>
+    </template>
+</odoo>
