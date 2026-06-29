@@ -182,8 +182,12 @@ class TicketmatonQueue(models.Model):
             })
         return True
 
-    def action_call_next(self):
-        """Llama al siguiente ticket en espera."""
+    def action_call_next(self, desk_id=None):
+        """Llama al siguiente ticket en espera.
+
+        Si se indica desk_id, solo cierra/atiende los turnos previos de ESA
+        mesa, de modo que varias mesas pueden atender la misma cola en paralelo.
+        """
         self.ensure_one()
         ticket = self.env["ticketmaton.ticket"].search(
             [("queue_id", "=", self.id), ("state", "=", "waiting")],
@@ -193,23 +197,27 @@ class TicketmatonQueue(models.Model):
         if not ticket:
             raise UserError(_("No hay turnos en espera en %(name)s.", name=self.name))
 
-        # Marcar anteriores en calling/serving como done
-        old_active = self.env["ticketmaton.ticket"].search([
+        old_domain = [
             ("queue_id", "=", self.id),
             ("state", "in", ("calling", "serving")),
-        ])
+        ]
+        if desk_id:
+            # Solo cerrar el turno activo de esta mesa; otras mesas siguen
+            old_domain.append(("desk_id", "=", desk_id))
+        old_active = self.env["ticketmaton.ticket"].search(old_domain)
         old_active.action_mark_done(silent=True)
 
-        ticket.action_call()
+        ticket.action_call(desk_id=desk_id)
         return ticket
 
-    def action_recall_current(self):
-        """Rellama el turno actual."""
+    def action_recall_current(self, desk_id=None):
+        """Rellama el turno actual (de la mesa indicada si se pasa desk_id)."""
         self.ensure_one()
+        domain = [("queue_id", "=", self.id), ("state", "in", ("calling", "serving"))]
+        if desk_id:
+            domain.append(("desk_id", "=", desk_id))
         ticket = self.env["ticketmaton.ticket"].search(
-            [("queue_id", "=", self.id), ("state", "in", ("calling", "serving"))],
-            order="call_date desc",
-            limit=1,
+            domain, order="call_date desc", limit=1
         )
         if not ticket:
             raise UserError(_("No hay turno activo para rellamar."))

@@ -22,7 +22,8 @@ function startDisplay(root) {
     const apiBase = `/ticketmaton/${stationId}/${token}`;
 
     let config = null;
-    const lastCallingId = {};
+    const seenCalls = {};
+    let firstLoad = true;
 
     root.innerHTML = `
         <div class="td-header">
@@ -53,31 +54,66 @@ function startDisplay(root) {
 
     function renderQueues(state) {
         queuesEl.innerHTML = "";
+        const newCalls = [];
         for (const q of state.queues || []) {
+            const active = q.active_calls && q.active_calls.length
+                ? q.active_calls
+                : (q.current
+                    ? [{ id: q.current_id, number: q.current, desk_name: "", call_token: q.call_token }]
+                    : []);
+
+            let currentHtml;
+            if (!active.length) {
+                currentHtml = `<div class="td-current-number">—</div>`;
+            } else {
+                currentHtml = active
+                    .map(
+                        (c) => `
+                        <div class="td-current-line">
+                            <span class="td-current-number">${c.number}</span>
+                            ${c.desk_name ? `<span class="td-current-desk">${c.desk_name}</span>` : ""}
+                        </div>`
+                    )
+                    .join("");
+            }
+
             const card = document.createElement("div");
             card.className = "td-queue-card";
             card.style.borderColor = q.color || "#3498db";
             card.innerHTML = `
                 <h2 class="td-queue-name">${q.name}</h2>
                 <p class="td-now-label">${config?.display_now_label || "Turno actual"}</p>
-                <div class="td-current-number">${q.current || "—"}</div>
+                ${currentHtml}
                 <p class="td-next-label">${config?.display_next_label || "Siguientes"}</p>
                 <div class="td-next-numbers">${(q.next || []).join(" · ") || "—"}</div>
             `;
             queuesEl.appendChild(card);
 
-            const callKey = `${q.current_id}@${q.call_token || ""}`;
-            if (q.current_id && lastCallingId[q.id] !== callKey) {
-                lastCallingId[q.id] = callKey;
-                showCallOverlay(q.current, q.name);
+            for (const c of active) {
+                const key = `${c.id}@${c.call_token || ""}`;
+                if (c.id && !seenCalls[key]) {
+                    seenCalls[key] = true;
+                    if (!firstLoad) {
+                        newCalls.push({ number: c.number, queue: q.name, desk: c.desk_name });
+                    }
+                }
             }
+        }
+        firstLoad = false;
+        if (newCalls.length) {
+            // Mostrar el ultimo llamado
+            const last = newCalls[newCalls.length - 1];
+            showCallOverlay(last.number, last.queue, last.desk);
         }
     }
 
     let overlayTimer;
-    function showCallOverlay(number, queueName) {
+    function showCallOverlay(number, queueName, deskName) {
         root.querySelector(".td-call-number").textContent = number;
-        root.querySelector(".td-call-queue").textContent = queueName;
+        const label = deskName
+            ? deskName
+            : queueName;
+        root.querySelector(".td-call-queue").textContent = label;
         overlay.classList.remove("d-none");
         clearTimeout(overlayTimer);
         overlayTimer = setTimeout(() => overlay.classList.add("d-none"), 8000);

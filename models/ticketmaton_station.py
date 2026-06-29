@@ -102,6 +102,7 @@ class TicketmatonStation(models.Model):
     )
 
     queue_ids = fields.One2many("ticketmaton.queue", "station_id", string="Colas")
+    desk_ids = fields.One2many("ticketmaton.desk", "station_id", string="Mesas")
     ticket_ids = fields.One2many("ticketmaton.ticket", "station_id", string="Tickets")
 
     waiting_count = fields.Integer(compute="_compute_stats")
@@ -215,7 +216,11 @@ class TicketmatonStation(models.Model):
         }
 
     def get_display_state(self):
-        """Estado actual para pantalla publica."""
+        """Estado actual para pantalla publica.
+
+        Soporta varias mesas atendiendo la misma cola: devuelve todas las
+        llamadas activas por cola, cada una con su mesa.
+        """
         self.ensure_one()
         queues_data = []
         for queue in self.queue_ids.filtered("active"):
@@ -225,22 +230,35 @@ class TicketmatonStation(models.Model):
                     ("state", "in", ("calling", "serving")),
                 ],
                 order="call_date desc",
-                limit=1,
             )
             next_waiting = self.env["ticketmaton.ticket"].search(
                 [("queue_id", "=", queue.id), ("state", "=", "waiting")],
                 order="create_date asc",
                 limit=3,
             )
+            active_calls = [
+                {
+                    "id": t.id,
+                    "number": t.number_display,
+                    "desk_name": t.desk_id.name if t.desk_id else "",
+                    "desk_color": t.desk_id.color if t.desk_id else "",
+                    "call_token": fields.Datetime.to_string(t.call_date)
+                    if t.call_date
+                    else "",
+                }
+                for t in calling
+            ]
+            top = calling[:1]
             queues_data.append({
                 "id": queue.id,
                 "name": queue.name,
                 "color": queue.color or "#3498db",
-                "current": calling.number_display if calling else "",
-                "current_id": calling.id if calling else False,
-                "call_token": fields.Datetime.to_string(calling.call_date)
-                if calling and calling.call_date
+                "current": top.number_display if top else "",
+                "current_id": top.id if top else False,
+                "call_token": fields.Datetime.to_string(top.call_date)
+                if top and top.call_date
                 else "",
+                "active_calls": active_calls,
                 "next": [t.number_display for t in next_waiting],
             })
         return {"queues": queues_data, "station_name": self.name}
@@ -256,7 +274,6 @@ class TicketmatonStation(models.Model):
                     ("state", "in", ("calling", "serving")),
                 ],
                 order="call_date desc",
-                limit=1,
             )
             next_waiting = self.env["ticketmaton.ticket"].search(
                 [("queue_id", "=", queue.id), ("state", "=", "waiting")],
@@ -266,13 +283,28 @@ class TicketmatonStation(models.Model):
             waiting_total = self.env["ticketmaton.ticket"].search_count(
                 [("queue_id", "=", queue.id), ("state", "=", "waiting")]
             )
+            top = calling[:1]
+            active_calls = [
+                {
+                    "id": t.id,
+                    "number": t.number_display,
+                    "desk_id": t.desk_id.id if t.desk_id else False,
+                    "desk_name": t.desk_id.name if t.desk_id else "",
+                }
+                for t in calling
+            ]
             queues_data.append({
                 "id": queue.id,
                 "name": queue.name,
                 "color": queue.color or "#3498db",
-                "current": calling.number_display if calling else "",
-                "current_id": calling.id if calling else False,
+                "current": top.number_display if top else "",
+                "current_id": top.id if top else False,
+                "active_calls": active_calls,
                 "next": [t.number_display for t in next_waiting],
                 "waiting_total": waiting_total,
             })
-        return {"queues": queues_data, "station_name": self.name}
+        return {
+            "queues": queues_data,
+            "station_name": self.name,
+            "desks": self.desk_ids.filtered("active").get_public_data(),
+        }

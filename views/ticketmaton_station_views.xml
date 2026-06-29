@@ -67,6 +67,22 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Mesas / Mostradores" name="desks">
+                            <field name="desk_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="color" widget="color"/>
+                                    <field name="queue_ids" widget="many2many_tags"
+                                           domain="[('station_id', '=', parent.id)]"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                            <div class="text-muted mt-2">
+                                Varias mesas pueden atender la misma cola. Al pulsar Siguiente,
+                                la pantalla muestra el numero y a que mesa pasar.
+                            </div>
+                        </page>
                         <page string="Mensajes kiosco" name="messages">
                             <group>
                                 <field name="welcome_message"/>

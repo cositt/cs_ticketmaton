@@ -28,6 +28,30 @@
     min-height: 1.4rem;
 }
 
+.tc-desk-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.tc-desk-select {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    border: 2px solid #1a5276;
+    background: #fff;
+    color: #1a5276;
+}
+
+.tc-others {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #8a97a5;
+    margin-bottom: 0.75rem;
+}
+
 .tc-status-error {
     color: #e63946;
 }

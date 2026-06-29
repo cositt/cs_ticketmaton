@@ -20,10 +20,18 @@ function startControl(root) {
     const stationId = root.dataset.stationId;
     const token = root.dataset.token;
     const apiBase = `/ticketmaton/${stationId}/${token}`;
+    const deskStorageKey = `ticketmaton_desk_${stationId}`;
+
+    let desks = [];
+    let selectedDesk = parseInt(localStorage.getItem(deskStorageKey) || "0", 10) || null;
 
     root.innerHTML = `
         <div class="tc-header">
             <h1 class="tc-station-name"></h1>
+            <div class="tc-desk-picker d-none">
+                <label>Soy:</label>
+                <select class="tc-desk-select"></select>
+            </div>
             <span class="tc-status"></span>
         </div>
         <div class="tc-queues"></div>
@@ -31,6 +39,18 @@ function startControl(root) {
 
     const queuesEl = root.querySelector(".tc-queues");
     const statusEl = root.querySelector(".tc-status");
+    const deskPicker = root.querySelector(".tc-desk-picker");
+    const deskSelect = root.querySelector(".tc-desk-select");
+
+    deskSelect.addEventListener("change", () => {
+        selectedDesk = parseInt(deskSelect.value, 10) || null;
+        if (selectedDesk) {
+            localStorage.setItem(deskStorageKey, String(selectedDesk));
+        } else {
+            localStorage.removeItem(deskStorageKey);
+        }
+        refresh();
+    });
 
     function flash(msg, isError = false) {
         statusEl.textContent = msg;
@@ -42,10 +62,52 @@ function startControl(root) {
         }, 4000);
     }
 
+    function renderDeskPicker() {
+        if (!desks.length) {
+            deskPicker.classList.add("d-none");
+            return;
+        }
+        deskPicker.classList.remove("d-none");
+        const valid = desks.some((d) => d.id === selectedDesk);
+        if (!valid) {
+            selectedDesk = desks[0].id;
+            localStorage.setItem(deskStorageKey, String(selectedDesk));
+        }
+        deskSelect.innerHTML = desks
+            .map(
+                (d) =>
+                    `<option value="${d.id}" ${d.id === selectedDesk ? "selected" : ""}>${d.name}</option>`
+            )
+            .join("");
+    }
+
+    function myCurrent(q) {
+        if (selectedDesk) {
+            const mine = (q.active_calls || []).find((c) => c.desk_id === selectedDesk);
+            return mine ? mine.number : "";
+        }
+        return q.current || "";
+    }
+
+    function othersInfo(q) {
+        if (!selectedDesk) return "";
+        const others = (q.active_calls || []).filter((c) => c.desk_id !== selectedDesk && c.number);
+        if (!others.length) return "";
+        return (
+            "Otras mesas: " +
+            others.map((c) => `${c.number}${c.desk_name ? " (" + c.desk_name + ")" : ""}`).join(" · ")
+        );
+    }
+
     function render(state) {
         root.querySelector(".tc-station-name").textContent = state.station_name || "";
+        desks = state.desks || [];
+        renderDeskPicker();
+
         queuesEl.innerHTML = "";
         for (const q of state.queues || []) {
+            const current = myCurrent(q);
+            const others = othersInfo(q);
             const card = document.createElement("div");
             card.className = "tc-queue-card";
             card.style.borderTopColor = q.color || "#3498db";
@@ -55,9 +117,10 @@ function startControl(root) {
                     <span class="tc-waiting">${q.waiting_total} en espera</span>
                 </div>
                 <div class="tc-current">
-                    <span class="tc-current-label">Atendiendo</span>
-                    <span class="tc-current-number">${q.current || "—"}</span>
+                    <span class="tc-current-label">${selectedDesk ? "Mi turno" : "Atendiendo"}</span>
+                    <span class="tc-current-number">${current || "—"}</span>
                 </div>
+                ${others ? `<div class="tc-others">${others}</div>` : ""}
                 <div class="tc-next">Siguientes: ${(q.next || []).join(" · ") || "—"}</div>
                 <div class="tc-actions">
                     <button class="tc-btn tc-btn-next" data-q="${q.id}">SIGUIENTE</button>
@@ -84,7 +147,11 @@ function startControl(root) {
 
     async function doAction(action, queueId) {
         try {
-            const result = await jsonRpc(`${apiBase}/${action}`, { queue_id: parseInt(queueId, 10) });
+            const params = { queue_id: parseInt(queueId, 10) };
+            if (selectedDesk) {
+                params.desk_id = selectedDesk;
+            }
+            const result = await jsonRpc(`${apiBase}/${action}`, params);
             if (result.error) {
                 flash(result.message || "Sin turnos en espera", true);
             } else if (result.ticket) {

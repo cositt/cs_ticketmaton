@@ -81,15 +81,16 @@ class TicketmatonController(http.Controller):
         type="jsonrpc",
         auth="public",
     )
-    def call_next(self, station_id, token, queue_id):
+    def call_next(self, station_id, token, queue_id, desk_id=None):
         station = self._get_station(station_id, token)
         if not station:
             return {"error": "not_found"}
         queue = request.env["ticketmaton.queue"].sudo().browse(int(queue_id))
         if not queue.exists() or queue.station_id.id != station.id:
             return {"error": "invalid_queue"}
+        desk_id = self._valid_desk(station, desk_id)
         try:
-            ticket = queue.action_call_next()
+            ticket = queue.action_call_next(desk_id=desk_id)
         except Exception as exc:
             return {"error": "no_waiting", "message": str(exc)}
         return {"ticket": ticket.get_public_data()}
@@ -99,15 +100,16 @@ class TicketmatonController(http.Controller):
         type="jsonrpc",
         auth="public",
     )
-    def recall(self, station_id, token, queue_id):
+    def recall(self, station_id, token, queue_id, desk_id=None):
         station = self._get_station(station_id, token)
         if not station:
             return {"error": "not_found"}
         queue = request.env["ticketmaton.queue"].sudo().browse(int(queue_id))
         if not queue.exists() or queue.station_id.id != station.id:
             return {"error": "invalid_queue"}
+        desk_id = self._valid_desk(station, desk_id)
         try:
-            ticket = queue.action_recall_current()
+            ticket = queue.action_recall_current(desk_id=desk_id)
         except Exception as exc:
             return {"error": "no_active", "message": str(exc)}
         return {"ticket": ticket.get_public_data()}
@@ -117,25 +119,38 @@ class TicketmatonController(http.Controller):
         type="jsonrpc",
         auth="public",
     )
-    def skip(self, station_id, token, queue_id):
+    def skip(self, station_id, token, queue_id, desk_id=None):
         station = self._get_station(station_id, token)
         if not station:
             return {"error": "not_found"}
         queue = request.env["ticketmaton.queue"].sudo().browse(int(queue_id))
         if not queue.exists() or queue.station_id.id != station.id:
             return {"error": "invalid_queue"}
+        desk_id = self._valid_desk(station, desk_id)
+        skip_domain = [
+            ("queue_id", "=", queue.id),
+            ("state", "in", ("calling", "serving")),
+        ]
+        if desk_id:
+            skip_domain.append(("desk_id", "=", desk_id))
         current = request.env["ticketmaton.ticket"].sudo().search(
-            [("queue_id", "=", queue.id), ("state", "in", ("calling", "serving"))],
-            order="call_date desc",
-            limit=1,
+            skip_domain, order="call_date desc", limit=1
         )
         if current:
             current.action_skip()
         try:
-            ticket = queue.action_call_next()
+            ticket = queue.action_call_next(desk_id=desk_id)
         except Exception:
             return {"skipped": bool(current), "ticket": False}
         return {"skipped": bool(current), "ticket": ticket.get_public_data()}
+
+    def _valid_desk(self, station, desk_id):
+        if not desk_id:
+            return None
+        desk = request.env["ticketmaton.desk"].sudo().browse(int(desk_id))
+        if desk.exists() and desk.station_id.id == station.id and desk.active:
+            return desk.id
+        return None
 
     # ---- LOGO ----
 

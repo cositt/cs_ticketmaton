@@ -44,8 +44,13 @@ class TicketmatonTicket(models.Model):
     serve_date = fields.Datetime(readonly=True)
     done_date = fields.Datetime(readonly=True)
 
+    desk_id = fields.Many2one(
+        "ticketmaton.desk", string="Mesa", ondelete="set null", index=True
+    )
+
     queue_name = fields.Char(related="queue_id.name", store=True)
     station_name = fields.Char(related="station_id.name", store=True)
+    desk_name = fields.Char(related="desk_id.name", store=True)
 
     def get_public_data(self):
         self.ensure_one()
@@ -55,6 +60,8 @@ class TicketmatonTicket(models.Model):
             "queue_id": self.queue_id.id,
             "queue_name": self.queue_id.name,
             "queue_color": self.queue_id.color,
+            "desk_id": self.desk_id.id if self.desk_id else False,
+            "desk_name": self.desk_id.name if self.desk_id else "",
             "state": self.state,
             "create_date": fields.Datetime.to_string(self.create_date),
             "call_date": fields.Datetime.to_string(self.call_date) if self.call_date else False,
@@ -83,9 +90,12 @@ class TicketmatonTicket(models.Model):
         for ticket in self:
             ticket.station_id._notify(event, ticket.get_public_data())
 
-    def action_call(self):
+    def action_call(self, desk_id=None):
         now = fields.Datetime.now()
-        self.write({"state": "calling", "call_date": now})
+        vals = {"state": "calling", "call_date": now}
+        if desk_id:
+            vals["desk_id"] = desk_id
+        self.write(vals)
         self._notify_state("ticket_calling")
         return True
 
